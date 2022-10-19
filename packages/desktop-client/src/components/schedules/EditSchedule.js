@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ import { colors } from 'loot-design/src/style';
 
 import SimpleTransactionsTable from '../accounts/SimpleTransactionsTable';
 import { OpSelect } from '../modals/EditRule';
-import { Page, usePageType } from '../Page';
+import { Page } from '../Page';
 import { AmountInput, BetweenAmountInput } from '../util/AmountInput';
 
 function mergeFields(defaults, initial) {
@@ -91,8 +91,6 @@ export default function ScheduleDetails() {
   let dateFormat = useSelector(state => {
     return state.prefs.local.dateFormat || 'MM/dd/yyyy';
   });
-
-  let pageType = usePageType();
 
   let [state, dispatch] = useReducer(
     (state, action) => {
@@ -251,7 +249,6 @@ export default function ScheduleDetails() {
   useEffect(() => {
     async function run() {
       let date = state.fields.date;
-      let dates = null;
 
       if (date == null) {
         dispatch({ type: 'set-upcoming-dates', dates: null });
@@ -341,6 +338,10 @@ export default function ScheduleDetails() {
   }, [state.schedule, state.transactionsMode, state.fields]);
 
   let selectedInst = useSelected('transactions', state.transactions, []);
+
+  // helps emulate the <TransactionsTable> behavior where <PayeeAutocomplete>
+  // remains open as long as we're interacting with it
+  const [payeeFieldFocused, setPayeeFieldFocused] = useState(false);
 
   async function onSave() {
     dispatch({ type: 'form-error', error: null });
@@ -432,10 +433,15 @@ export default function ScheduleDetails() {
           <FormLabel title="Payee" />
           <PayeeAutocomplete
             value={state.fields.payee}
-            inputProps={{ placeholder: '(none)' }}
+            inputProps={{
+              onBlur: () => setPayeeFieldFocused(false),
+              onFocus: () => setPayeeFieldFocused(true),
+              placeholder: '(none)'
+            }}
             onSelect={id =>
               dispatch({ type: 'set-field', field: 'payee', value: id })
             }
+            focused={payeeFieldFocused}
           />
         </FormField>
 
