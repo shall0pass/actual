@@ -392,8 +392,8 @@ function FileSettings({
                     Encryption is turned on.
                   </Text>{' '}
                   Your data is encrypted with a key that only you have before
-                  sending it out to the cloud . Local data remains unencrypted
-                  so if you forget your password you can re-encrypt it.
+                  sending it out to the cloud. Local data remains unencrypted so
+                  if you forget your password you can re-encrypt it.
                   <Button
                     style={{ marginTop: 10 }}
                     onClick={() => onChangeKey()}
@@ -404,20 +404,14 @@ function FileSettings({
               ) : (
                 <View style={{ alignItems: 'flex-start' }}>
                   <Text style={{ lineHeight: '1.4em' }}>
-                    Encryption is not enabled. Any data on our servers is still
-                    stored safely and securely, but it's not end-to-end
-                    encrypted which means we have the ability to read it (but we
-                    won't). If you want, you can use a password to encrypt your
-                    data on our servers.
+                    Encryption is not enabled. Your data is still stored on your
+                    server, but if you do not fully trust the security of the
+                    server, you can enable encryption to ensure that your data
+                    is encrypted on the server.
                   </Text>
                   <Button
                     style={{ marginTop: 10 }}
-                    onClick={() => {
-                      alert(
-                        'End-to-end encryption is not supported on the self-hosted service yet'
-                      );
-                      // pushModal('create-encryption-key');
-                    }}
+                    onClick={() => pushModal('create-encryption-key')}
                   >
                     Enable encryption
                   </Button>
