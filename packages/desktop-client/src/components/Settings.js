@@ -16,16 +16,10 @@ import {
   ButtonWithLoading,
   AnchorLink
 } from 'loot-design/src/components/common';
-import {
-  mobileStyles,
-  styles as desktopStyles,
-  colors
-} from 'loot-design/src/style';
+import { styles, colors } from 'loot-design/src/style';
 import ExpandArrow from 'loot-design/src/svg/ExpandArrow';
-import { withThemeColor } from 'loot-design/src/util/withThemeColor';
 
 import useServerVersion from '../hooks/useServerVersion';
-import { isMobile } from '../util';
 
 let dateFormats = [
   { value: 'MM/dd/yyyy', label: 'MM/DD/YYYY' },
@@ -52,7 +46,6 @@ function Advanced({ prefs, userData, pushModal, resetSync }) {
   let [expanded, setExpanded] = useState(true);
   let [resetting, setResetting] = useState(false);
   let [resettingCache, setResettingCache] = useState(false);
-  let styles = true ? mobileStyles : desktopStyles;
 
   async function onResetSync() {
     setResetting(true);
@@ -93,13 +86,7 @@ function Advanced({ prefs, userData, pushModal, resetSync }) {
       </View>
 
       {expanded && (
-        <View
-          style={{
-            marginBottom: 20,
-            alignItems: 'flex-start',
-            ...(isMobile() && { width: '100%' })
-          }}
-        >
+        <View style={{ marginBottom: 20, alignItems: 'flex-start' }}>
           <Text>
             <strong>Budget ID</strong>: {prefs.id}
           </Text>
@@ -111,11 +98,10 @@ function Advanced({ prefs, userData, pushModal, resetSync }) {
               padding: 15,
               borderRadius: 4,
               marginTop: 20,
-              border: '1px solid ' + colors.n8,
-              ...(isMobile() && { width: '100%' })
+              border: '1px solid ' + colors.n8
             }}
           >
-            <Text style={{ marginBottom: 10, maxWidth: 500, lineHeight: 1.5 }}>
+            <Text style={{ marginBottom: 10, width: 500, lineHeight: 1.5 }}>
               <strong>Reset budget cache</strong> will clear all cached values
               for the budget and recalculate the entire budget. All values in
               the budget are cached for performance reasons, and if there is a
@@ -137,7 +123,7 @@ function Advanced({ prefs, userData, pushModal, resetSync }) {
               border: '1px solid ' + colors.n8
             }}
           >
-            <Text style={{ marginBottom: 10, maxWidth: 500, lineHeight: 1.5 }}>
+            <Text style={{ marginBottom: 10, width: 500, lineHeight: 1.5 }}>
               <strong>Reset sync</strong> will remove all local data used to
               track changes for syncing, and create a fresh sync id on our
               server. This file on other devices will have to be re-downloaded
@@ -158,11 +144,15 @@ function Advanced({ prefs, userData, pushModal, resetSync }) {
   );
 }
 
-function GlobalSettings({ globalPrefs, userData, saveGlobalPrefs, pushModal }) {
+function GlobalSettings({
+  globalPrefs,
+  userData,
+  saveGlobalPrefs,
+  pushModal,
+  closeBudget
+}) {
   let [documentDirChanged, setDirChanged] = useState(false);
   let dirScrolled = useRef(null);
-
-  // useSetMobileThemeColor(colors.n10, { skip: !isMobile() });
 
   useEffect(() => {
     if (dirScrolled.current) {
@@ -249,22 +239,16 @@ function GlobalSettings({ globalPrefs, userData, saveGlobalPrefs, pushModal }) {
           }}
         >
           <input
-            id="autoUpdate"
             type="checkbox"
             checked={globalPrefs.autoUpdate}
-            style={{
-              marginRight: 5,
-              ...(isMobile() && { height: 20, marginTop: 0, width: 32 })
-            }}
+            style={{ marginRight: 5 }}
             onChange={onAutoUpdate}
           />
 
           <View>
-            <label htmlFor="autoUpdate">
-              <Text style={{ fontSize: 15 }}>
-                Automatically check for updates
-              </Text>
-            </label>
+            <Text style={{ fontSize: 15 }}>
+              Automatically check for updates
+            </Text>
             <View
               style={{
                 color: colors.n2,
@@ -292,22 +276,16 @@ function GlobalSettings({ globalPrefs, userData, saveGlobalPrefs, pushModal }) {
           }}
         >
           <input
-            id="trackUsage"
             type="checkbox"
             checked={globalPrefs.trackUsage}
-            style={{
-              marginRight: 5,
-              ...(isMobile() && { height: 20, marginTop: 0, width: 32 })
-            }}
+            style={{ marginRight: 5 }}
             onChange={onTrackUsage}
           />
 
           <View>
-            <label htmlFor="trackUsage">
-              <Text style={{ fontSize: 15 }}>
-                Send basic usage statistics back to Actual{"'"}s servers
-              </Text>
-            </label>
+            <Text style={{ fontSize: 15 }}>
+              Send basic usage statistics back to Actual{"'"}s servers
+            </Text>
             <View
               style={{
                 color: colors.n2,
@@ -328,7 +306,6 @@ function GlobalSettings({ globalPrefs, userData, saveGlobalPrefs, pushModal }) {
 }
 
 function FileSettings({
-  closeBudget,
   savePrefs,
   prefs,
   userData,
@@ -338,8 +315,6 @@ function FileSettings({
   setAppState,
   signOut
 }) {
-  // useSetMobileThemeColor(colors.n10, { skip: !isMobile() });
-
   function onDateFormat(e) {
     let format = e.target.value;
     savePrefs({ dateFormat: format });
@@ -364,34 +339,17 @@ function FileSettings({
 
   return (
     <View>
-      <View style={{ marginTop: isMobile() ? 'auto' : 30 }}>
-        {isMobile() && (
-          <View style={{ alignItems: 'center', marginBottom: 30 }}>
-            <Text
-              style={[mobileStyles.text, { fontWeight: '600', fontSize: 17 }]}
-            >
-              {prefs.budgetName}
-            </Text>
-            <Button
-              onClick={async () => await closeBudget()}
-              style={{ marginTop: 10 }}
-            >
-              Close Budget
-            </Button>
-          </View>
-        )}
-
+      <View style={{ marginTop: 30 }}>
         <Title name="Formatting" />
 
         <Text>
           Date format:{' '}
           <select
             {...css({ marginLeft: 5, fontSize: 14 })}
-            defaultValue={dateFormat}
             onChange={onDateFormat}
           >
             {dateFormats.map(f => (
-              <option value={f.value} key={f.value}>
+              <option value={f.value} selected={f.value === dateFormat}>
                 {f.label}
               </option>
             ))}
@@ -402,11 +360,10 @@ function FileSettings({
           Number format:{' '}
           <select
             {...css({ marginLeft: 5, fontSize: 14 })}
-            defaultValue={numberFormat}
             onChange={onNumberFormat}
           >
             {numberFormats.map(f => (
-              <option key={f.value} value={f.value}>
+              <option value={f.value} selected={f.value === numberFormat}>
                 {f.label}
               </option>
             ))}
@@ -507,18 +464,19 @@ function SettingsLink({ to, name, style, first, last }) {
   );
 }
 
-export function Version() {
+function Version() {
   const version = useServerVersion();
-  let styles = isMobile() ? mobileStyles : desktopStyles;
 
   return (
     <Text
       style={[
         {
           alignSelf: 'center',
-          color: 'inherit',
+          color: colors.n7,
+          ':hover': { color: colors.n2 },
           padding: '6px 10px'
         },
+        styles.staticText,
         styles.smallText
       ]}
     >
@@ -543,7 +501,6 @@ class Settings extends React.Component {
 
   render() {
     let { prefs, globalPrefs, localServerURL, userData, match } = this.props;
-    let styles = isMobile() ? mobileStyles : desktopStyles;
 
     return (
       <View style={[styles.page, { overflow: 'hidden', fontSize: 14 }]}>
@@ -559,9 +516,8 @@ class Settings extends React.Component {
         </View>
         <View
           style={{
-            alignSelf: 'center',
-            color: colors.n2,
             flexDirection: 'row',
+            alignSelf: 'center',
             margin: '0 0 10px 0'
           }}
         >
@@ -575,13 +531,11 @@ class Settings extends React.Component {
               alignItems: 'flex-start',
               flex: 1,
               overflow: 'auto',
-              paddingBottom: 20,
-              ...(isMobile() && { padding: 20 })
-            },
-            { ...(isMobile() && styles.settingsPageContent) }
+              paddingBottom: 20
+            }
           ]}
         >
-          <View style={{ flexShrink: 0, width: '100%' }}>
+          <View style={{ flexShrink: 0 }}>
             <Switch>
               <Route path={`${match.path}/`} exact>
                 <Redirect to={`${match.path}/file`} />
@@ -592,12 +546,12 @@ class Settings extends React.Component {
                   userData={userData}
                   saveGlobalPrefs={this.props.saveGlobalPrefs}
                   pushModal={this.props.pushModal}
+                  closeBudget={this.props.closeBudget}
                 />
               </Route>
               <Route path={`${match.path}/file`}>
                 <FileSettings
                   prefs={prefs}
-                  closeBudget={this.props.closeBudget}
                   localServerURL={localServerURL}
                   userData={userData}
                   pushModal={this.props.pushModal}
@@ -615,14 +569,12 @@ class Settings extends React.Component {
   }
 }
 
-export default withThemeColor(colors.n10)(
-  connect(
-    state => ({
-      prefs: state.prefs.local,
-      globalPrefs: state.prefs.global,
-      localServerURL: state.account.localServerURL,
-      userData: state.user.data
-    }),
-    actions
-  )(Settings)
-);
+export default connect(
+  state => ({
+    prefs: state.prefs.local,
+    globalPrefs: state.prefs.global,
+    localServerURL: state.account.localServerURL,
+    userData: state.user.data
+  }),
+  actions
+)(Settings);

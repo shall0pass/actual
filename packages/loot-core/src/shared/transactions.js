@@ -2,10 +2,6 @@ import { last, diffItems, applyChanges } from './util';
 
 const uuid = require('../platform/uuid');
 
-export function isPreviewId(id) {
-  return id.indexOf('preview/') !== -1;
-}
-
 // The amount might be null when adding a new transaction
 function num(n) {
   return typeof n === 'number' ? n : 0;

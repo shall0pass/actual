@@ -72,7 +72,7 @@ export function UncategorizedButton() {
   );
 }
 
-export function SyncButton({ localPrefs, style, onSync }) {
+function SyncButton({ localPrefs, style, onSync }) {
   let [syncing, setSyncing] = useState(false);
   let [syncState, setSyncState] = useState(null);
 

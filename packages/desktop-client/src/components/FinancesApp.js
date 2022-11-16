@@ -2,15 +2,7 @@ import React, { useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
-import {
-  Router,
-  Route,
-  Redirect,
-  Switch,
-  useLocation,
-  NavLink
-} from 'react-router-dom';
-import { CompatRouter } from 'react-router-dom-v5-compat';
+import { Router, Route, Redirect, Switch, useLocation } from 'react-router-dom';
 
 import { createBrowserHistory } from 'history';
 import hotkeys from 'hotkeys-js';
@@ -23,20 +15,13 @@ import checkForUpgradeNotifications from 'loot-core/src/client/upgrade-notificat
 import * as undo from 'loot-core/src/platform/client/undo';
 import { BudgetMonthCountProvider } from 'loot-design/src/components/budget/BudgetMonthCountContext';
 import { View } from 'loot-design/src/components/common';
-import { colors, styles } from 'loot-design/src/style';
-import Cog from 'loot-design/src/svg/v1/Cog';
-import PiggyBank from 'loot-design/src/svg/v1/PiggyBank';
-import Wallet from 'loot-design/src/svg/v1/Wallet';
+import { colors } from 'loot-design/src/style';
 
-import { isMobile } from '../util';
 import { getLocationState, makeLocationState } from '../util/location-state';
 import Account from './accounts/Account';
-import { default as MobileAccount } from './accounts/MobileAccount';
-import { default as MobileAccounts } from './accounts/MobileAccounts';
 import { ActiveLocationProvider } from './ActiveLocation';
 import BankSyncStatus from './BankSyncStatus';
 import Budget from './budget';
-import { default as MobileBudget } from './budget/MobileBudget';
 import FloatableSidebar, { SidebarProvider } from './FloatableSidebar';
 import GlobalKeys from './GlobalKeys';
 import Modals from './Modals';
@@ -51,7 +36,6 @@ import PostsOfflineNotification from './schedules/PostsOfflineNotification';
 import Settings from './Settings';
 import Titlebar, { TitlebarProvider } from './Titlebar';
 import FixSplitsTool from './tools/FixSplitsTool';
-
 // import Debugger from './Debugger';
 
 function URLBar() {
@@ -62,7 +46,6 @@ function URLBar() {
       style={{
         position: 'absolute',
         bottom: 0,
-        left: 0,
         right: 0,
         margin: 15,
         backgroundColor: colors.n9,
@@ -95,55 +78,44 @@ function PageRoute({ path, component: Component }) {
   );
 }
 
-function Routes({ isMobile, location }) {
+function Routes({ location }) {
   return (
-    <>
-      <Switch location={location}>
-        <Route path="/">
-          <Route path="/" exact render={() => <Redirect to="/budget" />} />
+    <Switch location={location}>
+      <Route path="/">
+        <Route path="/" exact render={() => <Redirect to="/budget" />} />
 
-          <PageRoute path="/reports" component={Reports} />
-          <PageRoute
-            path="/budget"
-            component={isMobile ? MobileBudget : Budget}
-          />
+        <PageRoute path="/reports" component={Reports} />
+        <PageRoute path="/budget" component={Budget} />
 
-          <Route path="/schedules" exact component={Schedules} />
-          <Route path="/schedule/edit" exact component={EditSchedule} />
-          <Route path="/schedule/edit/:id" component={EditSchedule} />
-          <Route path="/schedule/link" component={LinkSchedule} />
-          <Route path="/schedule/discover" component={DiscoverSchedules} />
-          <Route
-            path="/schedule/posts-offline-notification"
-            component={PostsOfflineNotification}
-          />
+        <Route path="/schedules" exact component={Schedules} />
+        <Route path="/schedule/edit" exact component={EditSchedule} />
+        <Route path="/schedule/edit/:id" component={EditSchedule} />
+        <Route path="/schedule/link" component={LinkSchedule} />
+        <Route path="/schedule/discover" component={DiscoverSchedules} />
+        <Route
+          path="/schedule/posts-offline-notification"
+          component={PostsOfflineNotification}
+        />
 
-          <Route path="/tools/fix-splits" exact component={FixSplitsTool} />
-          <Route
-            path="/accounts/:id"
-            exact
-            children={props => {
-              const AcctCmp = isMobile ? MobileAccount : Account;
-              return (
-                props.match && (
-                  <AcctCmp key={props.match.params.id} {...props} />
-                )
-              );
-            }}
-          />
-          <Route
-            path="/accounts"
-            exact
-            component={isMobile ? MobileAccounts : Account}
-          />
-          <Route path="/settings" component={Settings} />
-        </Route>
-      </Switch>
-    </>
+        <Route path="/tools/fix-splits" exact component={FixSplitsTool} />
+
+        <Route
+          path="/accounts/:id"
+          exact
+          children={props => {
+            return (
+              props.match && <Account key={props.match.params.id} {...props} />
+            );
+          }}
+        />
+        <Route path="/accounts" exact component={Account} />
+        <Route path="/settings" component={Settings} />
+      </Route>
+    </Switch>
   );
 }
 
-function StackedRoutes({ isMobile }) {
+function StackedRoutes() {
   let location = useLocation();
   let locationPtr = getLocationState(location, 'locationPtr');
 
@@ -158,74 +130,23 @@ function StackedRoutes({ isMobile }) {
 
   return (
     <ActiveLocationProvider location={locations[locations.length - 1]}>
-      <Routes location={base} isMobile={isMobile} />
+      <Routes location={base} />
       {stack.map((location, idx) => (
         <PageTypeProvider
           key={location.key}
           type="modal"
           current={idx === stack.length - 1}
         >
-          <Routes location={location} isMobile={isMobile} />
+          <Routes location={location} />
         </PageTypeProvider>
       ))}
     </ActiveLocationProvider>
   );
 }
 
-function NavTab({ icon: TabIcon, name, path }) {
-  return (
-    <NavLink
-      to={path}
-      style={{
-        alignItems: 'center',
-        color: '#8E8E8F',
-        display: 'flex',
-        flexDirection: 'column',
-        textDecoration: 'none'
-      }}
-      activeStyle={{ color: colors.p5 }}
-    >
-      <TabIcon
-        width={22}
-        height={22}
-        style={{ color: 'inherit', marginBottom: '5px' }}
-      />
-      {name}
-    </NavLink>
-  );
-}
-
-function MobileNavTabs() {
-  return (
-    <div
-      style={{
-        backgroundColor: 'white',
-        borderTop: `1px solid ${colors.n10}`,
-        bottom: 0,
-        boxShadow: styles.shadow,
-        display: 'flex',
-        height: '80px',
-        justifyContent: 'space-around',
-        paddingTop: 10,
-        width: '100%'
-      }}
-    >
-      <NavTab name="Budget" path="/budget" icon={Wallet} isActive={false} />
-      <NavTab
-        name="Accounts"
-        path="/accounts"
-        icon={PiggyBank}
-        isActive={false}
-      />
-      <NavTab name="Settings" path="/settings" icon={Cog} isActive={false} />
-    </div>
-  );
-}
-
 class FinancesApp extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isMobile: isMobile(window.innerWidth) };
     this.history = createBrowserHistory();
 
     let oldPush = this.history.push;
@@ -242,15 +163,6 @@ class FinancesApp extends React.Component {
 
     this.cleanup = this.history.listen(location => {
       undo.setUndoState('url', window.location.href);
-    });
-
-    this.handleWindowResize = this.handleWindowResize.bind(this);
-  }
-
-  handleWindowResize() {
-    this.setState({
-      isMobile: isMobile(window.innerWidth),
-      windowWidth: window.innerWidth
     });
   }
 
@@ -286,76 +198,61 @@ class FinancesApp extends React.Component {
         this.history
       );
     }, 100);
-
-    window.addEventListener('resize', this.handleWindowResize);
   }
 
   componentWillUnmount() {
     this.cleanup();
-    window.removeEventListener('resize', this.handleWindowResize);
   }
 
   render() {
     return (
       <Router history={this.history}>
-        <CompatRouter>
-          <View style={{ height: '100%', backgroundColor: colors.n10 }}>
-            <GlobalKeys />
+        <View style={{ height: '100%', backgroundColor: colors.n10 }}>
+          <GlobalKeys />
 
-            <View style={{ flexDirection: 'row', flex: 1 }}>
-              {!this.state.isMobile && <FloatableSidebar />}
+          <View style={{ flexDirection: 'row', flex: 1 }}>
+            <FloatableSidebar />
 
+            <div
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+                position: 'relative'
+              }}
+            >
+              <Titlebar
+                style={{
+                  WebkitAppRegion: 'drag',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  zIndex: 1000
+                }}
+              />
               <div
                 style={{
                   flex: 1,
                   display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  width: '100%'
+                  overflow: 'auto',
+                  position: 'relative'
                 }}
               >
-                {!this.state.isMobile && (
-                  <Titlebar
-                    style={{
-                      WebkitAppRegion: 'drag',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      zIndex: 1000
-                    }}
-                  />
-                )}
-                <div
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    overflow: 'auto',
-                    position: 'relative'
-                  }}
-                >
-                  <Notifications />
-                  <BankSyncStatus />
+                <Notifications />
+                <BankSyncStatus />
 
-                  <StackedRoutes isMobile={this.state.isMobile} />
+                <StackedRoutes />
 
-                  {/*window.Actual.IS_DEV && <Debugger />*/}
-                  {/*window.Actual.IS_DEV && <URLBar />*/}
+                {/*window.Actual.IS_DEV && <Debugger />*/}
+                {/*window.Actual.IS_DEV && <URLBar />*/}
 
-                  <Modals history={this.history} />
-                </div>
-                {this.state.isMobile && (
-                  <Switch>
-                    <Route path="/budget" component={MobileNavTabs} />
-                    <Route path="/accounts" component={MobileNavTabs} />
-                    <Route path="/settings" component={MobileNavTabs} />
-                  </Switch>
-                )}
+                <Modals history={this.history} />
               </div>
-            </View>
+            </div>
           </View>
-        </CompatRouter>
+        </View>
       </Router>
     );
   }
