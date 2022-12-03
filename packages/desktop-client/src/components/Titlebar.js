@@ -87,7 +87,7 @@ export function SyncButton({ localPrefs, style, onSync }) {
         // instant
         setTimeout(() => {
           setSyncing(false);
-        }, 20);
+        }, 200);
       }
 
       if (type === 'error') {

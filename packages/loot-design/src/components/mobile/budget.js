@@ -913,6 +913,8 @@ export class BudgetTable extends React.Component {
           />
           <View
             style={{
+              alignItems: 'flex-start',
+              flexGrow: 0,
               flexDirection: 'row',
               paddingHorizontal: 10,
               paddingVertical: 10,
