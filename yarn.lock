@@ -4291,7 +4291,7 @@ __metadata:
     "@sentry/cli": ^1.68.0
     "@sentry/electron": 2.5.3
     "@sentry/wizard": 1.2.11
-    electron: 12.2.1
+    electron: 13.6.9
     electron-builder: 22.10.5
     electron-download: 4.1.1
     electron-is-dev: 2.0.0
@@ -9004,16 +9004,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:12.2.1":
-  version: 12.2.1
-  resolution: "electron@npm:12.2.1"
+"electron@npm:13.6.9":
+  version: 13.6.9
+  resolution: "electron@npm:13.6.9"
   dependencies:
     "@electron/get": ^1.0.1
     "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 1a20434b635f4be96920ff08d9ad0a1da023d5111fbbb97315cc21473547ac5f05d7bbcab6976c3c670f499f2b3f85af3e555f0652167498d77fca09b22c258d
+  checksum: c3760b908d9d6bb695ac7eaae87546b2eabbad719d0f3dcfd37000b3ca2a01b941cb94f6b0982a53b154d67ea93d6e84f5d906344dacbe58d1b307769e8423cd
   languageName: node
   linkType: hard
 
