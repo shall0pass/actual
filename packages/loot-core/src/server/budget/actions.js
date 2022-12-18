@@ -461,11 +461,11 @@ async function applyCategoryTemplate(category, template_lines, month, force) {
             console.log(`${category.name}: ${`More than one 'up to' limit found.`} ${template.line}`);
             return null;
           } else {
-            limit = amountToInteger(safeNumber(template.limit))
+            limit = amountToInteger(template.limit);
           }
         }
         if (template.monthly) {
-          let monthly = amountToInteger(safeNumber(template.monthly));
+          let monthly = amountToInteger(template.monthly);
           to_budget += monthly;
         } else {
           to_budget += limit;
@@ -476,7 +476,7 @@ async function applyCategoryTemplate(category, template_lines, month, force) {
       case 'by_annual': {
         // by has 'amount' and 'month' params
         let target_month = new Date(`${template.month}-01`);
-        let target = amountToInteger(safeNumber(template.amount));
+        let target = amountToInteger(template.amount);
         let num_months = differenceInCalendarMonths(target_month, current_month);
         let repeat = template.type === 'by' ? template.repeat : (template.repeat || 1) * 12;
         while (num_months < 0 && repeat) {
@@ -493,14 +493,14 @@ async function applyCategoryTemplate(category, template_lines, month, force) {
       case 'weeks': {
         // weeks has 'amount', 'starting' and optional 'limit' params
         // weeks has 'amount', 'starting', 'weeks' and optional 'limit' params
-        let amount = amountToInteger(safeNumber(template.amount));
+        let amount = amountToInteger(template.amount);
         let weeks = template.weeks != null ? Math.round(template.weeks) : 1;
         if (template.limit != null) {
           if (limit != null) {
             console.log(`${category.name}: ${`More than one 'up to' limit found.`} ${template.line}`);
             return null;
           } else {
-            limit = amountToInteger(safeNumber(template.limit))
+            limit = amountToInteger(template.limit);
           }
         }
         let w = new Date(template.starting);
@@ -537,7 +537,7 @@ async function applyCategoryTemplate(category, template_lines, month, force) {
           }
         }
         let num_months = differenceInCalendarMonths(to_month, current_month);
-        let target = amountToInteger(safeNumber(template.amount));
+        let target = amountToInteger(template.amount);
         if (num_months < 0) {
           console.log(`${category.name}: ${`${template.to} is in the past:`} ${template.line}`);
           return null;
