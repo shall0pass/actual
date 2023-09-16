@@ -22,7 +22,7 @@ export default function BalanceWithCarryover({
   let carryoverValue = useSheetValue(carryover);
   let balanceValue = useSheetValue(balance);
   //let goalValue = useSheetValue(goal);
-  let goalValue = '5000';
+  let goalValue = '5000'; //TODO: figure out how to actually get this value for realzies
 
   return (
     <>
