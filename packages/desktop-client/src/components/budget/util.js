@@ -35,6 +35,27 @@ export function makeAmountStyle(value) {
   }
 }
 
+export function makeAmountStyleGoal(value, goal) {
+  const greyed = makeAmountGrey(value);
+  if (greyed) {
+    return greyed;
+  }
+
+  if (goal) {
+    if ( goal>=0 ) {
+      if(value<goal) {
+        return { color: theme.warningText }//TODO: Find the real theme value
+      }
+      return {color: theme.noticeText}
+
+    }
+    if (value < 0) {
+      return { color: theme.errorText };
+    }
+  }
+
+}
+
 export function makeAmountFullStyle(value) {
   return {
     color:
