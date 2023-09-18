@@ -5,12 +5,12 @@ import View from '../common/View';
 import CellValue from '../spreadsheet/CellValue';
 import useSheetValue from '../spreadsheet/useSheetValue';
 
-import { makeAmountStyleGoal } from './util';
+import { makeAmountStyle } from './util';
 
 type BalanceWithCarryoverProps = {
   carryover: ComponentProps<typeof CellValue>['binding'];
   balance: ComponentProps<typeof CellValue>['binding'];
-  goal: ComponentProps<typeof CellValue>['binding'];
+  goal?: ComponentProps<typeof CellValue>['binding'];
   disabled?: boolean;
 };
 export default function BalanceWithCarryover({
@@ -30,7 +30,7 @@ export default function BalanceWithCarryover({
         binding={balance}
         goalValue={goalValue}
         type="financial"
-        getStyle={makeAmountStyleGoal}
+        getStyle={makeAmountStyle}
         style={{
           textAlign: 'right',
           ...(!disabled && {
@@ -54,7 +54,7 @@ export default function BalanceWithCarryover({
           <ArrowThinRight
             width={7}
             height={7}
-            style={makeAmountStyleGoal(balanceValue, goalValue)}
+            style={makeAmountStyle(balanceValue, goalValue)}
           />
         </View>
       )}

@@ -24,18 +24,7 @@ export function makeAmountGrey(value) {
     : null;
 }
 
-export function makeAmountStyle(value) {
-  const greyed = makeAmountGrey(value);
-  if (greyed) {
-    return greyed;
-  }
-
-  if (value < 0) {
-    return { color: theme.errorText };
-  }
-}
-
-export function makeAmountStyleGoal(value, goal) {
+export function makeAmountStyle(value, goal) {
   const greyed = makeAmountGrey(value);
   if (greyed) {
     return greyed;
