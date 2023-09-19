@@ -24,9 +24,9 @@ export default function BalanceWithCarryover({
   let carryoverValue = useSheetValue(carryover);
   let balanceValue = useSheetValue(balance);
   let goalValue = useSheetValue(goal);
-  let budgetedValue = useSheetValue(budgeted)
+  let budgetedValue = useSheetValue(budgeted);
   // if a goal is passed in then check if that goal is met or not.
-  let goalStatus = goalValue!=null ? budgetedValue>=goalValue : null;
+  let goalStatus = goalValue != null ? budgetedValue >= goalValue : null;
   return (
     <>
       <CellValue
