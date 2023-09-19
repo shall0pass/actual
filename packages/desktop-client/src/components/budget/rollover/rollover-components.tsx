@@ -318,6 +318,7 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
   const [menuOpen, setMenuOpen] = useState(false);
   const [hover, setHover] = useState(false);
   const isGoalTemplatesEnabled = useFeatureFlag('goalTemplatesEnabled');
+  
 
   return (
     <View
@@ -479,6 +480,7 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
             carryover={rolloverBudget.catCarryover(category.id)}
             balance={rolloverBudget.catBalance(category.id)}
             goal={rolloverBudget.catGoal(category.id)}
+            budgeted={rolloverBudget.catBudgeted(category.id)}
           />
         </span>
         {balanceTooltip.isOpen && (

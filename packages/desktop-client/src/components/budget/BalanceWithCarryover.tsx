@@ -11,24 +11,27 @@ type BalanceWithCarryoverProps = {
   carryover: ComponentProps<typeof CellValue>['binding'];
   balance: ComponentProps<typeof CellValue>['binding'];
   goal?: ComponentProps<typeof CellValue>['binding'];
+  budgeted?: ComponentProps<typeof CellValue>['binding'];
   disabled?: boolean;
 };
 export default function BalanceWithCarryover({
   carryover,
   balance,
   goal,
+  budgeted,
   disabled,
 }: BalanceWithCarryoverProps) {
   let carryoverValue = useSheetValue(carryover);
   let balanceValue = useSheetValue(balance);
-  //let goalValue = useSheetValue(goal);
-  let goalValue = '5000'; //TODO: figure out how to actually get this value for realzies
-
+  let goalValue = useSheetValue(goal);
+  let budgetedValue = useSheetValue(budgeted)
+  // if a goal is passed in then check if that goal is met or not.
+  let goalStatus = goalValue!=null ? budgetedValue>=goalValue : null;
   return (
     <>
       <CellValue
         binding={balance}
-        goalValue={goalValue}
+        goalStatus={goalStatus}
         type="financial"
         getStyle={makeAmountStyle}
         style={{
@@ -54,7 +57,7 @@ export default function BalanceWithCarryover({
           <ArrowThinRight
             width={7}
             height={7}
-            style={makeAmountStyle(balanceValue, goalValue)}
+            style={makeAmountStyle(balanceValue, goalStatus)}
           />
         </View>
       )}

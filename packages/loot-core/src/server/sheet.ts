@@ -213,6 +213,10 @@ export async function loadUserBudgets(db): Promise<void> {
         `${sheetName}!carryover-${budget.category}`,
         budget.carryover === 1 ? true : false,
       );
+      sheet.set(
+        `${sheetName}!goal-${budget.category}`,
+        budget.goal,
+      );
     }
   }
 

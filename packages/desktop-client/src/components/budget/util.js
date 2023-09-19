@@ -24,22 +24,21 @@ export function makeAmountGrey(value) {
     : null;
 }
 
-export function makeAmountStyle(value, goal) {
-  const greyed = makeAmountGrey(value);
-  if (greyed) {
-    return greyed;
+export function makeAmountStyle(value, status) {
+  if (value < 0) {
+    return { color: theme.errorText };
   }
 
-  if (goal) {
-    if (goal >= 0) {
-      if (value < goal) {
-        return { color: theme.warningText }; //TODO: Find the real theme value
-      }
-      return { color: theme.noticeText };
+  if (status === null || status === '') {
+    const greyed = makeAmountGrey(value);
+    if (greyed) {
+      return greyed;
     }
-    if (value < 0) {
-      return { color: theme.errorText };
+  } else {
+    if (!status) {
+      return { color: theme.warningText };
     }
+    return { color: theme.noticeText };
   }
 }
 
