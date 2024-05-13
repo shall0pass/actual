@@ -1,0 +1,23 @@
+name: Release branch merge
+
+on:
+  pull_request:
+
+env:
+  BRANCH: release
+  REPO: https://github.com/shall0pass/actual.git
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge with master
+        if: startsWith(github.head_ref, 'release/') == true
+        run: |
+          git clone ${{ env.REPO }} -b ${{ env.BRANCH }} tmp
+          cd tmp
+          git config user.name "Automerge Release"
+          git config user.email "automerge@actualbudget.org"
+          git config pull.rebase false
+          git pull ${{ env.REPO }} master
+          git push
