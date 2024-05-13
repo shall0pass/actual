@@ -3,4 +3,4 @@ category: Bugfix
 authors: [shall0pass]
 ---
 
-Check automerge
+Check automerge, this is a second test
