@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-  BRANCH: release
+  BRANCH: stable
   REPO: https://github.com/shall0pass/actual.git
 
 jobs:
