@@ -8,11 +8,6 @@ import packageJson from '../package.json';
 
 const backendWorkerUrl = new URL('./browser-server.js', import.meta.url);
 
-// This file installs global variables that the app expects.
-// Normally these are already provided by electron, but in a real
-// browser environment this is where we initialize the backend and
-// everything else.
-
 const IS_DEV = process.env.NODE_ENV === 'development';
 const ACTUAL_VERSION = Platform.isPlaywright
   ? '99.9.9'
@@ -25,7 +20,9 @@ let worker = null;
 
 function createBackendWorker() {
   worker = new Worker(backendWorkerUrl);
-  initSQLBackend(worker);
+  
+  // Initialize SQL backend asynchronously - don't block on this
+  Promise.resolve().then(() => initSQLBackend(worker));
 
   if (window.SharedArrayBuffer) {
     localStorage.removeItem('SharedArrayBufferOverride');
@@ -43,6 +40,7 @@ function createBackendWorker() {
   });
 }
 
+// Start worker creation immediately
 createBackendWorker();
 
 let isUpdateReadyForDownload = false;
@@ -53,10 +51,24 @@ const isUpdateReadyForDownloadPromise = new Promise(resolve => {
     resolve(true);
   };
 });
-const updateSW = registerSW({
-  immediate: true,
-  onNeedRefresh: markUpdateReadyForDownload,
-});
+
+// Register service worker with lower priority
+let updateSW;
+if ('requestIdleCallback' in window) {
+  requestIdleCallback(() => {
+    updateSW = registerSW({
+      immediate: true,
+      onNeedRefresh: markUpdateReadyForDownload,
+    });
+  });
+} else {
+  setTimeout(() => {
+    updateSW = registerSW({
+      immediate: true,
+      onNeedRefresh: markUpdateReadyForDownload,
+    });
+  }, 100);
+}
 
 global.Actual = {
   IS_DEV,
@@ -73,8 +85,6 @@ global.Actual = {
   reload: () => {
     if (window.navigator.serviceWorker == null) return;
 
-    // Unregister the service worker handling routing and then reload. This should force the reload
-    // to query the actual server rather than delegating to the worker
     return window.navigator.serviceWorker
       .getRegistration('/')
       .then(registration => {
@@ -86,27 +96,14 @@ global.Actual = {
       });
   },
 
-  startSyncServer: () => {
-    // Only for electron app
-  },
-
-  stopSyncServer: () => {
-    // Only for electron app
-  },
-
+  startSyncServer: () => {},
+  stopSyncServer: () => {},
   isSyncServerRunning: () => false,
-
-  startOAuthServer: () => {
-    return '';
-  },
-
-  restartElectronServer: () => {
-    // Only for electron app
-  },
+  startOAuthServer: () => '',
+  restartElectronServer: () => {},
 
   openFileDialog: async ({ filters = [] }) => {
     const FILE_ACCEPT_OVERRIDES = {
-      // Safari on iOS requires explicit MIME/UTType values for some extensions to allow selection.
       qfx: [
         'application/vnd.intu.qfx',
         'application/x-qfx',
@@ -120,7 +117,6 @@ global.Actual = {
 
     return new Promise(resolve => {
       let createdElement = false;
-      // Attempt to reuse an already-created file input.
       let input = document.body.querySelector(
         'input[id="open-file-dialog-input"]',
       );
@@ -160,7 +156,6 @@ global.Actual = {
           reader.readAsArrayBuffer(file);
           reader.onload = async function (ev) {
             const filepath = `/uploads/${filename}`;
-
             window.__actionsForMenu
               .uploadFile(filename, ev.target.result)
               .then(() => resolve([filepath]));
@@ -171,8 +166,6 @@ global.Actual = {
         }
       };
 
-      // In Safari the file input has to be in the DOM for change events to
-      // reliably fire.
       if (createdElement) {
         document.body.appendChild(input);
       }
@@ -195,35 +188,23 @@ global.Actual = {
   openURLInBrowser: url => {
     window.open(url, '_blank');
   },
-  openInFileManager: () => {
-    // File manager not available in browser
-  },
-  onEventFromMain: () => {
-    // Only for electron app
-  },
+  openInFileManager: () => {},
+  onEventFromMain: () => {},
   isUpdateReadyForDownload: () => isUpdateReadyForDownload,
   waitForUpdateReadyForDownload: () => isUpdateReadyForDownloadPromise,
   applyAppUpdate: async () => {
-    updateSW();
-
-    // Wait for the app to reload
-    await new Promise(() => {
-      // Do nothing
-    });
+    if (updateSW) {
+      updateSW();
+    }
+    await new Promise(() => {});
   },
 
-  ipcConnect: () => {
-    // Only for electron app
-  },
-  getServerSocket: async () => {
-    return worker;
-  },
+  ipcConnect: () => {},
+  getServerSocket: async () => worker,
 
   setTheme: theme => {
     window.__actionsForMenu.saveGlobalPrefs({ prefs: { theme } });
   },
 
-  moveBudgetDirectory: () => {
-    // Only for electron app
-  },
+  moveBudgetDirectory: () => {},
 };

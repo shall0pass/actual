@@ -97,7 +97,7 @@ async function fillPrimaryChecking(
     billCategories,
     billPayees,
   } = extractCommonThings(payees, groups);
-  const numTransactions = integer(100, 200);
+  const numTransactions = 10000;
 
   const transactions = [];
   for (let i = 0; i < numTransactions; i++) {
@@ -124,7 +124,7 @@ async function fillPrimaryChecking(
 
     const currentDate = monthUtils.subDays(
       monthUtils.currentDay(),
-      Math.floor(i / 3),
+      Math.floor((i * 4380) / numTransactions),
     );
 
     const transaction: TransactionEntity = {
