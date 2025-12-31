@@ -17,9 +17,7 @@ permissions:
 
 env:
   IMAGES: |
-    ${{ !github.event.repository.fork && 'actualbudget/actual-server' || '' }}
-    ghcr.io/${{ github.actor }}/actual-server
-    ghcr.io/${{ github.actor }}/actual
+    ghcr.io/${{ github.repository }}
 
   # Creates the following tags:
   # - actual-server:edge
