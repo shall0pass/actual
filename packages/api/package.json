@@ -19,6 +19,11 @@
       "types": "./@types/index.d.ts",
       "development": "./index.ts",
       "default": "./dist/index.js"
+    },
+    "./models": {
+      "types": "./@types/models.d.ts",
+      "development": "./models.ts",
+      "default": "./dist/models.js"
     }
   },
   "publishConfig": {
@@ -26,6 +31,10 @@
       ".": {
         "types": "./@types/index.d.ts",
         "default": "./dist/index.js"
+      },
+      "./models": {
+        "types": "./@types/models.d.ts",
+        "default": "./dist/models.js"
       }
     }
   },
