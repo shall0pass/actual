@@ -14,9 +14,9 @@ import { ReportCard } from '#components/reports/ReportCard';
 import { ReportCardName } from '#components/reports/ReportCardName';
 import { calculateTimeRange } from '#components/reports/reportRanges';
 import {
-  compactSankeyData,
+  GraphLayers,
+  // compactSankeyData,
   createSpreadsheet as sankeySpreadsheet,
-  withPercentageLabels,
 } from '#components/reports/spreadsheets/sankey-spreadsheet';
 import { useDashboardWidgetCopyMenu } from '#components/reports/useDashboardWidgetCopyMenu';
 import { useReport } from '#components/reports/useReport';
@@ -56,6 +56,13 @@ export function SankeyCard({
     setCardHeight(rect.height);
   });
 
+  const HEADER_HEIGHT = 82;
+  const PX_PER_NODE = 50;
+  const topN = Math.max(
+    2,
+    Math.floor((cardHeight - HEADER_HEIGHT) / PX_PER_NODE),
+  );
+
   const params = useMemo(
     () =>
       sankeySpreadsheet(
@@ -65,22 +72,25 @@ export function SankeyCard({
         meta?.conditions ?? [],
         meta?.conditionsOp ?? 'and',
         mode,
+        topN,
+        meta?.categorySort,
+        GraphLayers.IncomePayee,
+        GraphLayers.CategoryGroup,
       ),
-    [start, end, groupedCategories, meta?.conditions, meta?.conditionsOp, mode],
+    [
+      start,
+      end,
+      groupedCategories,
+      meta?.conditions,
+      meta?.conditionsOp,
+      mode,
+      topN,
+      meta?.categorySort,
+    ],
   );
   const data = useReport('sankey', params);
 
-  const HEADER_HEIGHT = 82;
-  const PX_PER_NODE = 50;
-  const topN = Math.max(
-    2,
-    Math.floor((cardHeight - HEADER_HEIGHT) / PX_PER_NODE),
-  );
-
-  const compactData = useMemo(
-    () => (data ? compactSankeyData(data, topN) : null),
-    [data, topN],
-  );
+  const compactData = useMemo(() => data, [data]);
 
   const startDate = d.parseISO(start);
   const endDate = d.parseISO(end);
@@ -154,11 +164,7 @@ export function SankeyCard({
 
         {compactData ? (
           <SankeyGraph
-            data={
-              meta?.showPercentages
-                ? withPercentageLabels(compactData)
-                : compactData
-            }
+            data={compactData}
             showPercentages={meta?.showPercentages}
             showTooltip={!isEditing}
             style={{ height: 'auto', flex: 1 }}
